@@ -1,80 +1,76 @@
+import 'dart:async';
+import 'dart:convert';
+
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
-import 'package:bjj_manager/models/student.dart';
-import 'package:bjj_manager/screens/student_details.dart';
-import 'package:bjj_manager/services/http_service.dart';
+import 'package:http/http.dart' as http;
 
-class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+import '../models/student.dart';
 
-  @override
-  State<HomeScreen> createState() => _HomeScreenState();
+Future<List<Student>> fetchStudents(http.Client client) async {
+  final response = await client.get(Uri.parse(
+      'http://127.0.0.1:8080/api/v1/students/page/size/100/number/1'));
+
+  // Use the compute function to run parseStudents in a separate isolate.
+  return compute(parseStudents, response.body);
 }
 
-class _HomeScreenState extends State<HomeScreen> {
-  final HttpService httpService = HttpService();
+// A function that converts a response body into a List<Student>.
+List<Student> parseStudents(String responseBody) {
+  final parsed =
+      (jsonDecode(responseBody) as List).cast<Map<String, dynamic>>();
 
-  late Future<List<Student>> futureStudents;
-  @override
-  void initState() {
-    super.initState();
-    futureStudents = httpService.pageStudents();
-  }
+  return parsed.map<Student>((json) => Student.fromJson(json)).toList();
+}
+
+class StudentScreen extends StatelessWidget {
+  const StudentScreen(String s, {super.key, required this.title});
+
+  final String title;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('AppBar Demo'),
-        centerTitle: true,
-        automaticallyImplyLeading: false,
-        actions: <Widget>[
-          IconButton(
-            icon: const Icon(Icons.add_alert),
-            tooltip: 'Show Snackbar',
-            onPressed: () {
-              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                content: Text('This is a snackbar'),
-                duration: Duration(seconds: 2),
-              ));
-            },
-          ),
-          IconButton(
-            icon: const Icon(Icons.logout),
-            tooltip: 'Logout',
-            onPressed: () => {context.go('/login')},
-          ),
-        ],
+        title: Text(title),
       ),
-      body: Center(
-        child: FutureBuilder(
-          future: futureStudents,
-          builder: (context, snapshot) {
-            if (snapshot.hasData) {
-              List<Student> students = snapshot.data!;
-              return ListView(
-                children: students
-                    .map(
-                      (Student student) => ListTile(
-                        title: Text(student.lastName),
-                        subtitle: Text(student.firstName),
-                        onTap: () => Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (context) => StudentDetails(
-                              student: student,
-                            ),
-                          ),
-                        ),
-                      ),
-                    )
-                    .toList(),
-              );
-            } else {
-              return const Center(child: CircularProgressIndicator());
-            }
-          },
-        ),
+      body: FutureBuilder<List<Student>>(
+        future: fetchStudents(http.Client()),
+        builder: (context, snapshot) {
+          if (snapshot.hasError) {
+            return const Center(
+              child: Text('An error has occurred!'),
+            );
+          } else if (snapshot.hasData) {
+            return StudentsList(students: snapshot.data!);
+          } else {
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          }
+        },
       ),
+    );
+  }
+}
+
+class StudentsList extends StatelessWidget {
+  const StudentsList({super.key, required this.students});
+
+  final List<Student> students;
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView.builder(
+      itemCount: students.length,
+      prototypeItem: const ListTile(
+        title: Text('Students'),
+      ),
+      itemBuilder: (context, index) {
+        return ListTile(
+          title: Text(students[index].firstName),
+        );
+      },
     );
   }
 }

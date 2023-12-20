@@ -20,7 +20,7 @@ samples, guidance on mobile development, and a full API reference.
 ```sh
 flutter pub add go_router
 flutter pub add provider
-flutter pub add logging
+flutter pub add logger
 flutter pub add http
 flutter pub upgrade --major-versions
 ```
