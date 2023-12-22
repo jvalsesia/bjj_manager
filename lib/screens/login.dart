@@ -33,10 +33,10 @@ class LoginScreen extends StatelessWidget {
               ),
               ElevatedButton(
                 onPressed: () {
-                  context.pushReplacement('/home');
+                  context.pushReplacement('/signup');
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.yellow,
+                  backgroundColor: Colors.grey,
                 ),
                 child: const Text('ENTER'),
               )

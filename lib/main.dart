@@ -1,11 +1,14 @@
 import 'dart:io';
 
+import 'package:bjj_manager/common/contants.dart';
+import 'package:bjj_manager/common/current_page.dart';
+import 'package:bjj_manager/pages/home_page.dart';
 import 'package:bjj_manager/screens/photo.dart';
+import 'package:bjj_manager/screens/signup.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:bjj_manager/common/current_screen.dart';
-import 'package:bjj_manager/common/theme.dart';
 import 'package:bjj_manager/screens/home.dart';
 import 'package:bjj_manager/screens/login.dart';
 import 'package:logger/logger.dart';
@@ -61,18 +64,28 @@ final screens = [
       title: 'Photo',
     ),
   ),
+  CurrentScreen(
+    name: 'SignUp',
+    route: 'signup',
+    builder: (context) => const SignupScreen(),
+  ),
+];
+
+final pages = [
+  CurrentPage(
+      name: 'HOme', route: 'home', builder: (context) => const HomePage())
 ];
 
 final router = GoRouter(
   routes: [
     GoRoute(
       path: '/',
-      builder: (context, state) => const LoginScreen(),
+      builder: (context, state) => const HomePage(),
       routes: [
-        for (final currentScreen in screens)
+        for (final currentPage in pages)
           GoRoute(
-            path: currentScreen.route,
-            builder: (context, state) => currentScreen.builder(context),
+            path: currentPage.route,
+            builder: (context, state) => currentPage.builder(context),
           ),
       ],
     ),
@@ -87,7 +100,12 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp.router(
       title: 'MyApp CurrentScreen',
-      theme: appTheme,
+      theme: ThemeData(
+        appBarTheme: const AppBarTheme(
+          color: kAppBackgroundColor,
+        ),
+        scaffoldBackgroundColor: kAppBackgroundColor,
+      ),
       routerConfig: router,
     );
   }

@@ -22,6 +22,7 @@ flutter pub add go_router
 flutter pub add provider
 flutter pub add logger
 flutter pub add http
+flutter pub add font_awesome_flutter
 flutter pub upgrade --major-versions
 ```
 
