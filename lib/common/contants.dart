@@ -23,7 +23,7 @@ const kLabelTextStyle = TextStyle(
 );
 
 const kHintTextStyle = TextStyle(
-  fontSize: 10.0,
+  fontSize: 20.0,
   color: kLabelColor,
 );
 

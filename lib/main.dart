@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:bjj_manager/common/contants.dart';
 import 'package:bjj_manager/common/current_page.dart';
 import 'package:bjj_manager/pages/home_page.dart';
+import 'package:bjj_manager/pages/login_page.dart';
 import 'package:bjj_manager/screens/photo.dart';
 import 'package:bjj_manager/screens/signup.dart';
 import 'package:flutter/foundation.dart';
@@ -73,14 +74,16 @@ final screens = [
 
 final pages = [
   CurrentPage(
-      name: 'HOme', route: 'home', builder: (context) => const HomePage())
+      name: 'Login', route: 'login', builder: (context) => const LoginPage()),
+  CurrentPage(
+      name: 'Home', route: 'home', builder: (context) => const HomePage()),
 ];
 
 final router = GoRouter(
   routes: [
     GoRoute(
       path: '/',
-      builder: (context, state) => const HomePage(),
+      builder: (context, state) => const LoginPage(),
       routes: [
         for (final currentPage in pages)
           GoRoute(
